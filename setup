@@ -1,0 +1,56 @@
+#!/data/data/com.termux/files/usr/bin/bash
+setup() {
+    local file_path
+
+    if [[ $# -eq 0 || $1 == "help" || $1 == "-h" || $1 == "-?" || $1 == "--help" ]]; then
+        echo -e "\e[01;33mSetup Help:\e[0m"
+        echo -e "  \e[1;34msetup \e[01;31m-?, -h, --help, help\e[0m   - Shows help"
+        echo -e "  \e[1;34msetup \e[01;31m-v, --version, version\e[0m - Shows version"
+        echo -e " "
+        echo "To modify files, use one of the following options:"
+        echo -e "  \e[1;34msetup \e[01;31malias\e[0m     - Modify \$PREFIX/etc/profile.d/alias.sh"
+        echo -e "  \e[1;34msetup \e[01;31mdefaults\e[0m  - Modify \$PREFIX/etc/profile.d/defaults.sh"
+        echo -e "  \e[1;34msetup \e[01;31mfunctions\e[0m - Modify \$PREFIX/etc/profile.d/functions.sh"
+        echo -e "  \e[1;34msetup \e[01;31mpaths\e[0m     - Modify \$PREFIX/etc/profile.d/paths.sh"
+        echo -e "  \e[1;34msetup \e[01;31mprofile\e[0m   - Modify \$PREFIX/etc/profile"
+        echo -e " "
+        echo -e "Default \$PREFIX is $PREFIX"
+        echo -e "Default \$EDITOR is $EDITOR"
+        return
+	#elif [[ $1 == "version" || $1 == "-v" || $1 == "--version" ]]; then
+	elif [[ $1 == "version" || $1 == "-v" || $1 == "--version" ]]; then
+		echo -e "setup v1.1"
+		echo -e "by PhateValleyman"
+		echo -e "Jonas.Ned@outlook.com"
+		return
+    fi
+
+    case $1 in
+        "alias")
+            file_path="$PREFIX/etc/profile.d/alias.sh"
+            ;;
+        "defaults")
+            file_path="$PREFIX/etc/profile.d/defaults.sh"
+            ;;
+        "functions")
+            file_path="$PREFIX/etc/profile.d/functions.sh"
+            ;;
+        "paths")
+            file_path="$PREFIX/etc/profile.d/paths.sh"
+            ;;
+        "profile")
+            file_path="$PREFIX/etc/profile"
+            ;;
+        *)
+            echo "Invalid option: $1. Run 'setup' for help."
+            return
+            ;;
+    esac
+
+    local editor="${EDITOR:-nano}"
+    env $editor "$file_path"
+
+    source "$file_path"    # Source the modified file
+}
+
+setup "$@"
