@@ -1,0 +1,68 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+setup() {
+    local file_path
+
+    # If no arguments provided or argument is "help", "-h", "-?", or "--help",
+    # display the help message
+    if [[ $# -eq 0 || $1 == "help" || $1 == "-h" || $1 == "-?" || $1 == "--help" ]]; then
+        echo -e "\e[01;33m$0 Help:\e[0m"
+        echo -e "  \e[1;34msetup \e[01;31m-?, -h, --help, help\e[0m   - Shows help"
+        echo -e "  \e[1;34msetup \e[01;31m-v, --version, version\e[0m - Shows version"
+        echo -e " "
+        echo "To modify files, use one of the following options:"
+        echo -e "  \e[1;34msetup \e[01;31malias\e[0m     - Modify \$PREFIX/etc/profile.d/alias.sh"
+        echo -e "  \e[1;34msetup \e[01;31mdefaults\e[0m  - Modify \$PREFIX/etc/profile.d/defaults.sh"
+        echo -e "  \e[1;34msetup \e[01;31mfunctions\e[0m - Modify \$PREFIX/etc/profile.d/functions.sh"
+        echo -e "  \e[1;34msetup \e[01;31mpaths\e[0m     - Modify \$PREFIX/etc/profile.d/paths.sh"
+        echo -e "  \e[1;34msetup \e[01;31mprofile\e[0m   - Modify \$PREFIX/etc/profile"
+        echo -e " "
+        echo -e "Default \$PREFIX is $PREFIX"
+        echo -e "Default \$EDITOR is $EDITOR"
+        return
+    # If the argument is "version", "-v", or "--version", display the script version
+    elif [[ $1 == "version" || $1 == "-v" || $1 == "--version" ]]; then
+        echo -e "$0 v1.1.0"
+        echo -e "by PhateValleyman"
+        echo -e "Jonas.Ned@outlook.com"
+        return
+    fi
+
+    # Check the provided argument and set the respective file path
+    case $1 in
+        "alias") file_path="$PREFIX/etc/profile.d/alias.sh" ;;
+        "defaults") file_path="$PREFIX/etc/profile.d/defaults.sh" ;;
+        "functions") file_path="$PREFIX/etc/profile.d/functions.sh" ;;
+        "paths") file_path="$PREFIX/etc/profile.d/paths.sh" ;;
+        "profile") file_path="$PREFIX/etc/profile" ;;
+        *)
+            echo "Invalid option: $1. Run 'setup' for help."
+            return
+            ;;
+    esac
+
+    local editor="${EDITOR:-nano}"
+
+    # Open the specified file for editing using the default editor (or nano if not set)
+    env "$editor" "$file_path"
+
+    # Source the modified file
+    source "$file_path"
+}
+
+# Function for command line completion for the 'setup' command
+_comp() {
+    local curw
+    COMPREPLY=()
+    curw=${COMP_WORDS[COMP_CWORD]}
+    # Generate autocompletion suggestions based on the current word
+    COMPREPLY=($(compgen -W '`_l`' -- "$curw"))
+    return 0
+}
+
+# Enable programmable completion
+shopt -s progcomp
+complete -F _comp setup -? -h --help -v --version help version alias defaults functions paths profile
+
+# Call the setup function with the provided arguments
+setup "$@"
